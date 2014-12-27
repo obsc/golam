@@ -17,7 +17,10 @@ type App struct { // e1 e2
 	e2 Expr
 }
 
-type Env func(Var) Val
+type Env interface {
+	lookup(Var) Val
+	extend(Var, Val) Env
+}
 
 func (v Var) isExpr() {}
 func (e Abs) isExpr() {}
