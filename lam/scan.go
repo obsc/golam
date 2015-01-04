@@ -3,34 +3,31 @@ package lam
 import (
 	"bufio"
 	"io"
-	"strings"
 )
 
-type Scanner struct {
+type scanner struct {
 	buf   *bufio.Reader
-	Lines chan string
+	lines chan string
 }
 
-func (s *Scanner) run() {
+func (s *scanner) loop() {
 	for {
 		line, err := s.buf.ReadString('\n')
+		s.lines <- line
 		if err == io.EOF {
-			s.Lines <- strings.TrimRight(line, "\n")
 			break
-		} else if err == nil {
-			s.Lines <- line
-		} else {
+		} else if err != nil {
 			panic(err)
 		}
 	}
-	close(s.Lines)
+	close(s.lines)
 }
 
-func ScanReader(rd io.Reader) *Scanner {
-	s := &Scanner{
+func Scanner(rd io.Reader) <-chan string {
+	s := &scanner{
 		buf:   bufio.NewReader(rd),
-		Lines: make(chan string),
+		lines: make(chan string),
 	}
-	go s.run()
-	return s
+	go s.loop()
+	return s.lines
 }

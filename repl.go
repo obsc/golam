@@ -1,11 +1,16 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
+	"github.com/obsc/golam/lam"
 	"os"
 )
 
 func main() {
-	fmt.Println("Hello World")
+	lines := lam.Scanner(os.Stdin)
+	for {
+		line := <-lines
+		fmt.Printf("%s", line)
+	}
+	fmt.Println("end")
 }
